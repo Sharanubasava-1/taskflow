@@ -103,7 +103,7 @@ export async function getOne(
     return res.status(200).json(organization);
   } catch (error: any) {
     if (error instanceof Error) {
-      return res.status(404).json({
+      return res.status(403).json({
         message: error.message,
       });
     }
