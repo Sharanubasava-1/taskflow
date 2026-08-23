@@ -1,19 +1,27 @@
 import { Queue } from "bullmq";
 
-const connection = {
-  host: process.env.REDIS_HOST ?? "localhost",
-  port: Number(process.env.REDIS_PORT ?? 6379),
-};
+let taskReminderQueue: Queue | null = null;
 
-export const taskReminderQueue = new Queue("task-reminders", {
-  connection,
-  defaultJobOptions: {
-    attempts: 3,
-    backoff: { type: "exponential", delay: 1000 },
-    removeOnComplete: 100,
-    removeOnFail: 100,
-  },
-});
+function getTaskReminderQueue(): Queue {
+  if (!taskReminderQueue) {
+    const connection = {
+      host: process.env.REDIS_HOST ?? "localhost",
+      port: Number(process.env.REDIS_PORT ?? 6379),
+    };
+
+    taskReminderQueue = new Queue("task-reminders", {
+      connection,
+      defaultJobOptions: {
+        attempts: 3,
+        backoff: { type: "exponential", delay: 1000 },
+        removeOnComplete: 100,
+        removeOnFail: 100,
+      },
+    });
+  }
+
+  return taskReminderQueue;
+}
 
 export async function scheduleTaskReminder(
   taskId: string,
@@ -21,12 +29,21 @@ export async function scheduleTaskReminder(
 ) {
   if (!dueDate) return;
 
-  await taskReminderQueue.add(
-    "task-due",
-    { taskId, dueDate: dueDate.toISOString() },
-    {
-      jobId: `task-due-${taskId}`,
-      delay: Math.max(0, dueDate.getTime() - Date.now()),
-    }
-  );
+  try {
+    const queue = getTaskReminderQueue();
+
+    await queue.add(
+      "task-due",
+      {
+        taskId,
+        dueDate: dueDate.toISOString(),
+      },
+      {
+        jobId: `task-due-${taskId}`,
+        delay: Math.max(0, dueDate.getTime() - Date.now()),
+      }
+    );
+  } catch (error) {
+    console.error("Failed to schedule task reminder:", error);
+  }
 }
