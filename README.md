@@ -5,7 +5,6 @@ TaskFlow is a backend task and project management API built with Node.js, TypeSc
 ## Features
 
 ### Authentication
-
 - User registration and login
 - JWT access tokens
 - Refresh tokens
@@ -16,38 +15,32 @@ TaskFlow is a backend task and project management API built with Node.js, TypeSc
 - Password hashing with bcrypt
 
 ### Organizations
-
 - Create, list, and retrieve organizations
 - Add and manage organization members
 - Change member roles
 - Remove members
 
 ### Projects
-
 - Create, list, retrieve, update, and delete projects
 
 ### Tasks
-
 - Create, list, retrieve, update, and delete tasks
 - Status and priority management
 - Due dates
 - Filtering by status, priority, assignee, and due-date range
 
 ### Assignments
-
 - Assign users to tasks
 - List task assignments
 - Remove task assignments
 
 ### Comments
-
 - Create comments
 - List comments
 - Update comments
 - Delete comments
 
 ### Background Jobs
-
 - Redis-backed task reminder queue
 - BullMQ delayed jobs
 - Dedicated background worker
@@ -70,30 +63,16 @@ TaskFlow is a backend task and project management API built with Node.js, TypeSc
 | Docker Compose | Service orchestration |
 | Node.js Test Runner | Automated testing |
 
-## Architecture
+## Prerequisites
 
-```text
-Client
-  |
-  v
-Express API :3000
-  |
-  +------ PostgreSQL
-  |
-  +------ Redis
-             |
-             v
-           BullMQ
-             |
-             v
-           Worker
-       Task Reminders
+- Node.js 22+
+- Docker Desktop
+- Docker Compose
 
-Authentication
-  |
-  +-- Access Token
-  |
-  +-- Refresh Token
-      |
-      +-- Rotation
-      +-- Revocation
+## Local Setup
+
+Clone the repository:
+
+```bash
+git clone https://github.com/Sharanubasava-1/taskflow.git
+cd taskflow
